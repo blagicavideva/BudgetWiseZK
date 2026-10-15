@@ -17,6 +17,7 @@ describe('registerSchema', () => {
 
   it.each(['short1A', 'lowercase123', 'lowercase1', 'NoDigitsHere', ''])('rejects a password missing required rules: %s', (password) => {
     // Primeri pokrivajo prekratko geslo ter manjkajočo veliko črko ali številko.
+    // "short1A" zazna prenizko minimalno dolžino; "lowercase1" zazna manjkajoče preverjanje velike črke.
     expect(registerSchema.safeParse({ body: { ...validRegistration.body, password } }).success).toBe(false);
   });
 

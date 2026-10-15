@@ -19,6 +19,7 @@ describe('createTransactionSchema', () => {
 
   it.each([0, -0.01, -10])('rejects a non-positive amount: %s', (amount) => {
     // Ničelni in negativni zneski niso dovoljeni.
+    // Primer z 0 zazna napako, pri kateri bi validator ničelni znesek pomotoma sprejel.
     expect(createTransactionSchema.safeParse({ ...validTransaction, amount }).success).toBe(false);
   });
 
@@ -36,6 +37,7 @@ describe('createTransactionSchema', () => {
   });
 
   it('rejects an amount above the maximum', () => {
+    // Zazna previsoko nastavljeno zgornjo mejo dovoljenega zneska.
     expect(createTransactionSchema.safeParse({ ...validTransaction, amount: 1000000000 }).success).toBe(false);
   });
 

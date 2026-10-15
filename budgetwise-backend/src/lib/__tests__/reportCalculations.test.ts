@@ -7,6 +7,7 @@ describe('percentChange', () => {
     [80, 100, -20],
     [1, 0, 100],
     [0, 0, 0],
+    // Zazna odstranitev Math.abs: negativna prejšnja vrednost mora dati 100 %, ne -100 %.
     [0, -100, 100],
   ])('returns %s current vs %s previous as %s percent', (current, previous, expected) => {
     expect(percentChange(current, previous)).toBe(expected);
@@ -26,6 +27,7 @@ describe('percentChange', () => {
 describe('getDateRange', () => {
   it('returns the full range for a 31-day month', () => {
     // Končni čas mora zajeti tudi zadnjo milisekundo zadnjega dne v mesecu.
+    // Zazna napako, pri kateri bi se razpon končal pri milisekundi 998 namesto 999.
     expect(getDateRange(2026, 1)).toEqual({
       start: new Date(2026, 0, 1),
       end: new Date(2026, 1, 0, 23, 59, 59, 999),
@@ -34,6 +36,7 @@ describe('getDateRange', () => {
 
   it('handles leap-year February', () => {
     // Prestopno leto ima februarja 29 dni.
+    // Preverjanje milisekund zazna prezgodnji konec obdobja tudi v prestopnem letu.
     const { start, end } = getDateRange(2024, 2);
     expect(start.getDate()).toBe(1);
     expect(end.getDate()).toBe(29);
