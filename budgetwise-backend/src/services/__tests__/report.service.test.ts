@@ -84,4 +84,12 @@ describe('getMonthlyReportService', () => {
     expect(queriedMonths).toContainEqual([2026, 1]);
     expect(queriedMonths).toContainEqual([2025, 12]);
   });
+
+  it('propagates a database error to the caller', async () => {
+    const databaseError = new Error('Database unavailable');
+    (prisma.transaction.aggregate as jest.Mock).mockRejectedValueOnce(databaseError);
+
+    // Storitev napake baze ne sme skriti; klicatelj jo mora prejeti.
+    await expect(getMonthlyReportService('user-1', 2026, 1)).rejects.toBe(databaseError);
+  });
 });

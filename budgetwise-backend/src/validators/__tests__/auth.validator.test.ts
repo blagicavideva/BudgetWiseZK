@@ -21,6 +21,13 @@ describe('registerSchema', () => {
     expect(registerSchema.safeParse({ body: { ...validRegistration.body, password } }).success).toBe(false);
   });
 
+  it('throws a validation exception when parse receives an invalid password', () => {
+    // Za razliko od safeParse mora parse ob neveljavnem geslu vreči izjemo.
+    expect(() => registerSchema.parse({
+      body: { ...validRegistration.body, password: 'lowercase1' },
+    })).toThrow();
+  });
+
   it.each(['not-an-email', ''])('rejects an invalid email: %s', (email) => {
     expect(registerSchema.safeParse({ body: { ...validRegistration.body, email } }).success).toBe(false);
   });

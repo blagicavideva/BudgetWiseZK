@@ -41,6 +41,11 @@ describe('createTransactionSchema', () => {
     expect(createTransactionSchema.safeParse({ ...validTransaction, amount: 1000000000 }).success).toBe(false);
   });
 
+  it('throws a validation exception when parse receives an invalid amount', () => {
+    // Metoda parse mora ob neveljavnem vhodu vreči validacijsko izjemo.
+    expect(() => createTransactionSchema.parse({ ...validTransaction, amount: 0 })).toThrow();
+  });
+
   it.each(['INCOME', 'EXPENSE'])('accepts supported transaction type %s', (type) => {
     expect(createTransactionSchema.safeParse({ ...validTransaction, type }).success).toBe(true);
   });
