@@ -1,0 +1,50 @@
+{
+  "expo": {
+    "name": "BudgetWise",
+    "slug": "BudgetWise",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/budgetwise-logo.png",
+    "scheme": "budgetwise",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/budgetwise-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.budgetwise.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/budgetwise-logo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.budgetwise.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/budgetwise-logo.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5dd7edec-a171-4d4b-b79a-d28c806d4aff"
+      }
+    },
+    "owner": "sristova"
+  }
+}
