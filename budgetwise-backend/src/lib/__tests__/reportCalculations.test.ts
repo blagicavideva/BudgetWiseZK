@@ -13,9 +13,10 @@ describe('percentChange', () => {
   });
 
   // ZAČASNO: namenoma povzroči neuspeh testa za prikaz delovanja cevovoda CI.
-  it('temporarily demonstrates that CI stops on a failing test', () => {
+  // Test namerno pričakuje napačno vrednost (false namesto true), zato ga Jest označi kot neuspešnega.
+  /* it('temporarily demonstrates that CI stops on a failing test', () => {
     expect(true).toBe(false);
-  });
+  }); */
 
   it('rounds to one decimal place', () => {
     expect(percentChange(10, 6)).toBe(66.7);
