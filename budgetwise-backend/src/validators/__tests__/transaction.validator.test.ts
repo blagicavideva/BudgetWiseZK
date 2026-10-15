@@ -11,16 +11,19 @@ const validTransaction = {
   date: '2026-02-28',
 };
 
+// Shema mora sprejeti veljaven zapis in zavrniti neveljavne zneske, datume ter polja.
 describe('createTransactionSchema', () => {
   it('accepts a valid transaction and applies the optional fields', () => {
     expect(createTransactionSchema.parse(validTransaction)).toEqual(validTransaction);
   });
 
   it.each([0, -0.01, -10])('rejects a non-positive amount: %s', (amount) => {
+    // Ničelni in negativni zneski niso dovoljeni.
     expect(createTransactionSchema.safeParse({ ...validTransaction, amount }).success).toBe(false);
   });
 
   it.each(['2026-2-01', 'not-a-date', '2026-02-31', '2025-02-29'])('rejects an invalid calendar date: %s', (date) => {
+    // Preverimo tudi neobstoječe datume in napačen zapis datuma.
     expect(createTransactionSchema.safeParse({ ...validTransaction, date }).success).toBe(false);
   });
 
@@ -54,6 +57,7 @@ describe('createTransactionSchema', () => {
 
 describe('updateTransactionSchema', () => {
   it('accepts partial updates while validating supplied values', () => {
+    // Posodobitev je lahko delna, vendar mora vsaka podana vrednost ostati veljavna.
     expect(updateTransactionSchema.parse({ amount: 12 })).toEqual({ amount: 12 });
     expect(updateTransactionSchema.safeParse({ amount: 0 }).success).toBe(false);
   });
@@ -61,6 +65,7 @@ describe('updateTransactionSchema', () => {
 
 describe('transactionQuerySchema', () => {
   it('applies pagination and sorting defaults', () => {
+    // Ob izpuščenih parametrih se uporabijo privzete vrednosti.
     expect(transactionQuerySchema.parse({})).toEqual({
       page: 1,
       limit: 20,
@@ -72,6 +77,7 @@ describe('transactionQuerySchema', () => {
   it.each([{ page: '0' }, { limit: '101' }, { limit: '0' }, { sortBy: 'description' }, { sortOrder: 'up' }])(
     'rejects invalid query parameters: %o',
     (query) => {
+      // Neveljavna paginacija ali sortiranje ne smeta prestati validacije.
       expect(transactionQuerySchema.safeParse(query).success).toBe(false);
     },
   );

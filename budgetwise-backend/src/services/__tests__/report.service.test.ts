@@ -13,9 +13,11 @@ jest.mock('../../lib/prisma', () => ({
   },
 }));
 
+// Mockirana baza omogoča preverjanje izračunov poročila brez povezave s pravo bazo.
 describe('getMonthlyReportService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    // Vrnemo različne zneske za trenutni in prejšnji mesec ter tako preverimo primerjavo.
     (prisma.transaction.aggregate as jest.Mock).mockImplementation(({ where }) => {
       const currentMonth = where.date.gte.getMonth() === 0;
       const isIncome = where.type === 'INCOME';
@@ -49,6 +51,7 @@ describe('getMonthlyReportService', () => {
   it('compares January with the previous December and summarizes mocked database totals', async () => {
     const result = await getMonthlyReportService('user-1', 2026, 1);
 
+    // Preverimo vse pomembne dele poročila, tudi pravilen prevod kategorije.
     expect(result).toMatchObject({
       period: { year: 2026, month: 1, label: 'Januar 2026' },
       summary: {
@@ -73,6 +76,7 @@ describe('getMonthlyReportService', () => {
     });
 
     const transactionAggregateCalls = (prisma.transaction.aggregate as jest.Mock).mock.calls;
+    // Januar 2026 mora primerjati s prejšnjim mesecem, decembrom 2025.
     const queriedMonths = transactionAggregateCalls.map(([query]) => [
       query.where.date.gte.getFullYear(),
       query.where.date.gte.getMonth() + 1,

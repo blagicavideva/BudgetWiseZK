@@ -9,12 +9,14 @@ const validRegistration = {
   },
 };
 
+// Registracija zahteva veljaven e-poštni naslov, močno geslo in ustrezni imeni.
 describe('registerSchema', () => {
   it('accepts valid registration data', () => {
     expect(registerSchema.parse(validRegistration)).toEqual(validRegistration);
   });
 
   it.each(['short1A', 'lowercase123', 'lowercase1', 'NoDigitsHere', ''])('rejects a password missing required rules: %s', (password) => {
+    // Primeri pokrivajo prekratko geslo ter manjkajočo veliko črko ali številko.
     expect(registerSchema.safeParse({ body: { ...validRegistration.body, password } }).success).toBe(false);
   });
 
@@ -41,6 +43,7 @@ describe('loginSchema', () => {
 
 describe('refreshSchema', () => {
   it('accepts a non-empty refresh token and rejects an empty token', () => {
+    // Praznega žetona za osvežitev ne smemo sprejeti.
     expect(refreshSchema.safeParse({ body: { refreshToken: 'token-value' } }).success).toBe(true);
     expect(refreshSchema.safeParse({ body: { refreshToken: '' } }).success).toBe(false);
   });
