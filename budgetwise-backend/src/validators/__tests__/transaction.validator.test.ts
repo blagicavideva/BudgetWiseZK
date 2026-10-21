@@ -108,3 +108,14 @@ it('prikazno preveri ničelni znesek z napačno pričakovano vrednostjo', () => 
   expect(createTransactionSchema.safeParse({ ...validTransaction, amount: 0 }).success).toBe(true);
 });
 */
+
+// Drugi prikazni primer: tudi napačno pričakovanje pri zgornji meji povzroči neuspeh.
+/*
+it('prikazno pričakuje napačno sprejetje previsokega zneska', () => {
+  // Največji dovoljeni znesek je 999999999; znesek 1000000000 mora biti zavrnjen.
+  // Test napačno pričakuje, da bo sprejet, zato bi Jest prikazal neuspeh in CI bi postal rdeč.
+  expect(createTransactionSchema.safeParse({ ...validTransaction, amount: 1000000000 }).success).toBe(true);
+});
+*/
+
+// Uporabljeni agent za pripravo in pregled testov: Codex (UI agent).

@@ -78,3 +78,16 @@ it('prikazno preveri napačno geslo z napačno pričakovano vrednostjo', () => {
   }).success).toBe(true);
 });
 */
+
+// Drugi prikazni primer: geslo, krajše od osmih znakov, ne izpolni pravil registracije.
+/*
+it('prikazno pričakuje napačno sprejetje prekratkega gesla', () => {
+  // "short1A" ima 7 znakov, zato ga mora validator zavrniti.
+  // Test napačno pričakuje, da je geslo veljavno, zato bi Jest prikazal neuspeh in CI bi postal rdeč.
+  expect(registerSchema.safeParse({
+    body: { ...validRegistration.body, password: 'short1A' },
+  }).success).toBe(true);
+});
+*/
+
+// Uporabljeni agent za pripravo in pregled testov: Codex (UI agent).

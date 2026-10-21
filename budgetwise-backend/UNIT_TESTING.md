@@ -6,6 +6,10 @@
 2. **Validacija avtentikacije** (`src/validators/auth.validator.ts`): izbrana je, ker registracija združuje več varnostnih pravil in pogojev glede dolžine polj. Registracija zahteva veljaven e-poštni naslov, geslo z najmanj osmimi znaki, veliko črko in številko ter ime in priimek dolžine od 1 do 50 znakov. Prijava zahteva veljaven e-poštni naslov in neprazno geslo. Žeton za osvežitev ne sme biti prazen.
 3. **Izračuni poročil** (`src/lib/reportCalculations.ts`): izbrani so, ker so primerjave zneskov odvisne od zaokroževanja, obravnave ničelnih vrednosti in koledarskih meja. Odstotna sprememba je zaokrožena na eno decimalno mesto in pravilno obravnava prejšnjo vrednost nič. Mesečni razpon vključuje prvi dan in zadnjo milisekundo meseca. Povprečna dnevna poraba upošteva dejansko število dni v mesecu in je zaokrožena na cente.
 
+## Dodatno testirana komponenta in pričakovano delovanje
+
+**Storitev mesečnega poročila** (`src/services/report.service.ts`) je dodatno testirana, ker združuje več poizvedb in izračunov. Za uporabnika in izbrani mesec pridobi podatke o prihodkih, stroških, prihrankih, kategorijah in največjem strošku ter pripravi povzetek in primerjavo s prejšnjim mesecem. Če poizvedba v podatkovni bazi odpove, mora storitev napako posredovati klicatelju. V testu je Prisma mockirana, zato se storitev preverja brez prave podatkovne baze.
+
 ## Navodila in dogovori za teste
 
 Testi so shranjeni ob izvornih enotah v mapah `__tests__` in imajo končnico `.test.ts`. Imena opisujejo pričakovano vedenje, na primer `accepts...`, `rejects...`, `returns...`, `throws...` ali `propagates...`. Pričakovane vrednosti so izbrane neodvisno od trenutne implementacije. Validacije in pomožni izračuni so čiste funkcije, zato zanje ne potrebujemo mock objektov; test storitve mesečnega poročila pa uporablja mockirane metode Prisma, da deluje brez prave podatkovne baze.

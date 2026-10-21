@@ -115,4 +115,15 @@ describe('getMonthlyReportService', () => {
     expect(result.summary.totalIncome).toBe(999);
   });
   */
+
+  // Drugi prikazni primer: napačno pričakovanje pri oznaki obdobja prav tako povzroči neuspeh.
+  /*
+  it('prikazno pričakuje napačno oznako meseca', async () => {
+    // Za januar 2026 je pravilna oznaka "Januar 2026", ne "Februar 2026".
+    const result = await getMonthlyReportService('user-1', 2026, 1);
+    expect(result.period.label).toBe('Februar 2026');
+  });
+  */
 });
+
+// Uporabljeni agent za pripravo in pregled testov: Codex (UI agent).

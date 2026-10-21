@@ -52,6 +52,14 @@ describe('getDateRange', () => {
     expect(end.getHours()).toBe(23);
     expect(end.getMilliseconds()).toBe(999);
   });
+
+  // Drugi prikazni primer: preveri zadnjo milisekundo meseca z napačnim pričakovanjem.
+  /*
+  it('prikazno pričakuje napačno zadnjo milisekundo meseca', () => {
+    // Funkcija pravilno vrne 999, test pa napačno pričakuje 998, zato bi padel.
+    expect(getDateRange(2026, 1).end.getMilliseconds()).toBe(998);
+  });
+  */
 });
 
 describe('averageDailySpend', () => {
@@ -67,3 +75,5 @@ describe('averageDailySpend', () => {
     expect(averageDailySpend(0, 2026, 2)).toBe(0);
   });
 });
+
+// Uporabljeni agent za pripravo in pregled testov: Codex (UI agent).
