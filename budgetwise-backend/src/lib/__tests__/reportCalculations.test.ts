@@ -1,7 +1,11 @@
+/*Preverja tri samostojne funkcije: odstotno spremembo, začetek in konec mesečnega obdobja ter povprečno dnevno porabo.
+Tu se preverijo robni primeri, kot so ničelne vrednosti, prestopno leto in pravilno zaokroževanje.*/
+
 import { averageDailySpend, getDateRange, percentChange } from '../reportCalculations';
 
 // Preverimo pozitivno in negativno spremembo ter dogovorjeno obravnavo ničle.
 describe('percentChange', () => {
+  // Primeri preverijo pozitivno in negativno spremembo ter obravnavo prejšnje vrednosti nič.
   it.each([
     [120, 100, 20],
     [80, 100, -20],
@@ -13,13 +17,18 @@ describe('percentChange', () => {
     expect(percentChange(current, previous)).toBe(expected);
   });
 
-  // ZAČASNO: namenoma povzroči neuspeh testa za prikaz delovanja cevovoda CI.
-  // Test namerno pričakuje napačno vrednost (false namesto true), zato ga Jest označi kot neuspešnega.
-  /* it('temporarily demonstrates that CI stops on a failing test', () => {
-    expect(true).toBe(false);
-  }); */
+  // Za prikaz neuspeha CI začasno odstrani oznaki komentarja okoli spodnjega testa.
+  // Po prikazu testa ne pozabi znova zakomentirati ali odstraniti.
+  /*
+  it('prikazno preveri odstotno spremembo z napačno pričakovano vrednostjo', () => {
+    // Sprememba z 100 na 120 je (120 - 100) / 100 * 100 = 20 %, ne 25 %.
+    // Napačna pričakovana vrednost 25 povzroči neuspeh testa in posledično CI.
+    expect(percentChange(120, 100)).toBe(25);
+  });
+  */
 
   it('rounds to one decimal place', () => {
+    // Rezultat 66,666... mora biti zaokrožen na eno decimalno mesto.
     expect(percentChange(10, 6)).toBe(66.7);
   });
 });

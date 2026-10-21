@@ -1,9 +1,14 @@
+/*Preverja, ali sistem sprejme veljaven prihodek ali strošek in zavrne napačne podatke: 
+ničelni ali previsok znesek, neveljaven datum,valuto, opis ali parametre poizvedbe. 
+Preveri tudi, da parse ob neveljavnem znesku vrže izjemo.*/
+
 import {
   createTransactionSchema,
   transactionQuerySchema,
   updateTransactionSchema,
 } from '../transaction.validator';
 
+// Osnovni veljavni primer uporabimo kot izhodišče za spremembe posameznih polj.
 const validTransaction = {
   type: 'EXPENSE',
   amount: 25.5,
@@ -14,6 +19,7 @@ const validTransaction = {
 // Shema mora sprejeti veljaven zapis in zavrniti neveljavne zneske, datume ter polja.
 describe('createTransactionSchema', () => {
   it('accepts a valid transaction and applies the optional fields', () => {
+    // Veljaven zapis mora biti sprejet brez sprememb.
     expect(createTransactionSchema.parse(validTransaction)).toEqual(validTransaction);
   });
 
@@ -29,6 +35,7 @@ describe('createTransactionSchema', () => {
   });
 
   it('accepts the maximum amount and maximum description length', () => {
+    // Robni vrednosti na dovoljenih mejah morata biti sprejeti.
     expect(createTransactionSchema.safeParse({
       ...validTransaction,
       amount: 999999999,
@@ -47,10 +54,12 @@ describe('createTransactionSchema', () => {
   });
 
   it.each(['INCOME', 'EXPENSE'])('accepts supported transaction type %s', (type) => {
+    // Obe dovoljeni vrsti transakcije morata biti sprejeti.
     expect(createTransactionSchema.safeParse({ ...validTransaction, type }).success).toBe(true);
   });
 
   it('rejects unsupported currency, description length, and malformed category id', () => {
+    // Vsaka sprememba v seznamu predstavlja eno neveljavno vrednost polja.
     for (const patch of [
       { currency: 'CAD' },
       { description: '' },
@@ -89,3 +98,13 @@ describe('transactionQuerySchema', () => {
     },
   );
 });
+
+// Za prikaz neuspeha CI začasno odstrani oznaki komentarja okoli tega testa.
+// Po prikazu ga znova zakomentiraj, da redni testi ostanejo uspešni.
+/*
+it('prikazno preveri ničelni znesek z napačno pričakovano vrednostjo', () => {
+  // Znesek transakcije mora biti večji od 0, zato validator pravilno zavrne znesek 0.
+  // Test napačno pričakuje, da bo ničelni znesek veljaven; ta vsebinska napaka povzroči neuspeh testa in CI.
+  expect(createTransactionSchema.safeParse({ ...validTransaction, amount: 0 }).success).toBe(true);
+});
+*/

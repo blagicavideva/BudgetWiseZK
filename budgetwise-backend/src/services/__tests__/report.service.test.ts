@@ -1,6 +1,12 @@
+/*Preverja, ali storitev pravilno združi podatke v poročilo:
+povzetek, primerjavo s prejšnjim mesecem, največji strošek in porabo po kategorijah.
+Uporablja mockirano bazo Prisma, zato test ne potrebuje prave podatkovne baze.
+Preveri tudi, da se napaka baze posreduje klicatelju.*/
+
 import { prisma } from '../../lib/prisma';
 import { getMonthlyReportService } from '../report.service';
 
+// Mock nadomesti pravo bazo, da test preverja logiko storitve brez dostopa do baze.
 jest.mock('../../lib/prisma', () => ({
   prisma: {
     transaction: {
@@ -16,6 +22,7 @@ jest.mock('../../lib/prisma', () => ({
 // Mockirana baza omogoča preverjanje izračunov poročila brez povezave s pravo bazo.
 describe('getMonthlyReportService', () => {
   beforeEach(() => {
+    // Pred vsakim testom počistimo klice in nastavimo ponovljive odgovore mockov.
     jest.clearAllMocks();
     // Vrnemo različne zneske za trenutni in prejšnji mesec ter tako preverimo primerjavo.
     (prisma.transaction.aggregate as jest.Mock).mockImplementation(({ where }) => {
@@ -27,28 +34,33 @@ describe('getMonthlyReportService', () => {
 
       return Promise.resolve({ _sum: { amount }, _count: currentMonth ? 3 : 2 });
     });
+    // Mock prihrankov vrne različni vrednosti za trenutni in prejšnji mesec.
     (prisma.goal.aggregate as jest.Mock).mockImplementation(({ where }) => {
       const currentMonth = where.createdAt.gte.getMonth() === 0;
       return Promise.resolve({ _sum: { currentAmount: currentMonth ? '150' : '100' } });
     });
+    // Grupiranje po kategoriji vrne stroške, po datumu pa prazen seznam.
     (prisma.transaction.groupBy as jest.Mock).mockImplementation(({ by }) => {
       if (by[0] === 'categoryId') {
         return Promise.resolve([{ categoryId: 'food-id', _sum: { amount: '300' }, _count: 2 }]);
       }
       return Promise.resolve([]);
     });
+    // Mock vrne največji strošek in pripadajočo kategorijo.
     (prisma.transaction.findFirst as jest.Mock).mockResolvedValue({
       description: 'Groceries',
       amount: '120',
       category: { name: 'Food & Dining', icon: '🍲' },
       date: new Date('2026-01-15T00:00:00.000Z'),
     });
+    // Podatek o kategoriji omogoča preverjanje njenega prikazanega imena in ikone.
     (prisma.category.findMany as jest.Mock).mockResolvedValue([
       { id: 'food-id', name: 'Food & Dining', icon: '🍲', color: '#123456' },
     ]);
   });
 
   it('compares January with the previous December and summarizes mocked database totals', async () => {
+    // Januar preveri tudi pravilni prehod na december prejšnjega leta.
     const result = await getMonthlyReportService('user-1', 2026, 1);
 
     // Preverimo vse pomembne dele poročila, tudi pravilen prevod kategorije.
@@ -86,10 +98,21 @@ describe('getMonthlyReportService', () => {
   });
 
   it('propagates a database error to the caller', async () => {
+    // Prvi klic baze namenoma vrne napako, ki jo mora storitev posredovati naprej.
     const databaseError = new Error('Database unavailable');
     (prisma.transaction.aggregate as jest.Mock).mockRejectedValueOnce(databaseError);
 
     // Storitev napake baze ne sme skriti; klicatelj jo mora prejeti.
     await expect(getMonthlyReportService('user-1', 2026, 1)).rejects.toBe(databaseError);
   });
+
+  // Za prikaz neuspeha CI začasno odstrani oznaki komentarja okoli spodnjega testa.
+  // Mock za januar 2026 vrne prihodke 1000; pričakovanje 999 je napačno, ker se vsota ne ujema z vhodnimi podatki.
+  // Ta vsebinsko napačna pričakovana vrednost povzroči neuspeh testa in posledično CI.
+  /*
+  it('prikazno preveri skupni prihodek z napačno pričakovano vrednostjo', async () => {
+    const result = await getMonthlyReportService('user-1', 2026, 1);
+    expect(result.summary.totalIncome).toBe(999);
+  });
+  */
 });
