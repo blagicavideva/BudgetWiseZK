@@ -1,6 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
 // ─── Base URL 
 // Avtomatsko zaznavanje lokalnega IP naslova računalnika med razvojem
@@ -23,24 +24,54 @@ const KEYS = {
   REFRESH_TOKEN: 'bw_refresh_token',
 } as const;
 
+// SecureStore je na voljo v iOS/Android. Za lokalno spletno testiranje v razvojnem
+// načinu uporabimo localStorage; žetoni v brskalniku niso shranjeni šifrirano.
+const isWebDevelopment = Platform.OS === 'web' && __DEV__;
+
+async function getStoredToken(key: string): Promise<string | null> {
+  if (isWebDevelopment) {
+    return typeof localStorage === 'undefined' ? null : localStorage.getItem(key);
+  }
+  return SecureStore.getItemAsync(key);
+}
+
+async function setStoredToken(key: string, value: string): Promise<void> {
+  if (isWebDevelopment) {
+    if (typeof localStorage === 'undefined') {
+      throw new Error('Brskalnik ne omogoča lokalnega shranjevanja.');
+    }
+    localStorage.setItem(key, value);
+    return;
+  }
+  await SecureStore.setItemAsync(key, value);
+}
+
+async function deleteStoredToken(key: string): Promise<void> {
+  if (isWebDevelopment) {
+    if (typeof localStorage !== 'undefined') localStorage.removeItem(key);
+    return;
+  }
+  await SecureStore.deleteItemAsync(key);
+}
+
 // ─── Token Storage 
 export const tokenStorage = {
   async getAccess(): Promise<string | null> {
-    return SecureStore.getItemAsync(KEYS.ACCESS_TOKEN);
+    return getStoredToken(KEYS.ACCESS_TOKEN);
   },
   async getRefresh(): Promise<string | null> {
-    return SecureStore.getItemAsync(KEYS.REFRESH_TOKEN);
+    return getStoredToken(KEYS.REFRESH_TOKEN);
   },
   async save(access: string, refresh: string): Promise<void> {
     await Promise.all([
-      SecureStore.setItemAsync(KEYS.ACCESS_TOKEN, access),
-      SecureStore.setItemAsync(KEYS.REFRESH_TOKEN, refresh),
+      setStoredToken(KEYS.ACCESS_TOKEN, access),
+      setStoredToken(KEYS.REFRESH_TOKEN, refresh),
     ]);
   },
   async clear(): Promise<void> {
     await Promise.all([
-      SecureStore.deleteItemAsync(KEYS.ACCESS_TOKEN),
-      SecureStore.deleteItemAsync(KEYS.REFRESH_TOKEN),
+      deleteStoredToken(KEYS.ACCESS_TOKEN),
+      deleteStoredToken(KEYS.REFRESH_TOKEN),
     ]);
   },
 };
