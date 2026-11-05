@@ -27,6 +27,8 @@ export default defineConfig({
     // API je nastavljen na lokalni naslov, vendar klice v testih prestrežejo mocki.
     env: {
       EXPO_PUBLIC_API_URL: 'http://127.0.0.1:3000/api/v1',
+      // Google Auth zahteva vrednost že pri izrisu zaslona; testi pa Google prijave ne izvajajo.
+      EXPO_PUBLIC_GOOGLE_CLIENT_ID_WEB: 'playwright-test-client-id.apps.googleusercontent.com',
     },
   },
 });
