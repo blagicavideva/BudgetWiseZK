@@ -279,8 +279,10 @@ export default function StatisticsScreen() {
         <Animated.View style={[styles.content, contentStyle]}>
           {/* 2x2 Grid */}
           <View style={styles.grid}>
-            <StatCard label="Prihodki" value={formatCurrency(stats?.currentMonth.income ?? 0)} valueColor={C.warm} icon="💰" change={stats?.changes.income} delay={0} style={styles.halfCard} />
-            <StatCard label="Stroški" value={formatCurrency(stats?.currentMonth.expenses ?? 0)} valueColor={C.accent} icon="📤" change={stats?.changes.expenses} changeInverted delay={60} style={styles.halfCard} />
+            {/* Oznaki omogočata testu, da preveri vrednost znotraj prave kartice. */}
+            <StatCard label="Prihodki" value={formatCurrency(stats?.currentMonth.income ?? 0)} valueColor={C.warm} icon="💰" change={stats?.changes.income} delay={0} style={styles.halfCard} testID="report-income-card" />
+            {/* NAMERNA NAPAKA ZA PREDSTAVITEV: kartica stroškov kaže prihodke; avtomatski test FT-03 jo zazna. */}
+            <StatCard label="Stroški" value={formatCurrency(stats?.currentMonth.income ?? 0)} valueColor={C.accent} icon="📤" change={stats?.changes.expenses} changeInverted delay={60} style={styles.halfCard} testID="report-expenses-card" />
             <StatCard
               label="Prihranki"
               value={`${(stats?.currentMonth.savings ?? 0) < 0 ? '-' : ''}${formatCurrency(Math.abs(stats?.currentMonth.savings ?? 0))}`}

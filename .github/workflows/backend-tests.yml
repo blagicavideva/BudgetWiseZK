@@ -1,5 +1,6 @@
 name: Backend unit tests
 
+# Workflow se zažene ob spremembah backend kode ali samega workflowa.
 on:
   push:
     paths:
@@ -12,20 +13,25 @@ on:
 
 jobs:
   test:
+    # GitHub pripravi sveže okolje Linux za izvajanje backend testov.
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: budgetwise-backend
     steps:
+      # Prenese repozitorij in pripravi Node okolje s predpomnilnikom npm.
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
           cache-dependency-path: budgetwise-backend/package-lock.json
+      # Namesti natančno določene odvisnosti iz package-lock.json.
       - run: npm ci
+      # Zažene Jest teste in ustvari poročilo o pokritosti; neuspešni testi ustavijo opravilo.
       - run: npm run test:coverage
-      - name: Save coverage report
+      # Shrani poročilo o pokritosti tudi, če so testi spodleteli.
+      - name: Shrani poročilo o pokritosti
         if: always()
         uses: actions/upload-artifact@v4
         with:

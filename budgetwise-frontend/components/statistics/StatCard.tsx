@@ -16,10 +16,12 @@ interface StatCardProps {
   icon?: string;
   style?: ViewStyle;
   delay?: number;
+  // Neobvezna oznaka, s katero lahko avtomatski test izbere točno določeno kartico.
+  testID?: string;
 }
 
 export function StatCard({
-  label, value, valueColor, subtitle, change, changeInverted = false, icon, style, delay = 0,
+  label, value, valueColor, subtitle, change, changeInverted = false, icon, style, delay = 0, testID,
 }: StatCardProps) {
   const { colors: C } = useTheme();
   const opacity = useSharedValue(0);
@@ -51,7 +53,7 @@ export function StatCard({
     <Animated.View style={[{
       backgroundColor: C.bg1, borderRadius: 14, padding: 16,
       borderWidth: 0.5, borderColor: C.border1,
-    }, style, animStyle]}>
+    }, style, animStyle]} testID={testID}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
         <Text style={{ fontSize: 11, color: C.text3, textTransform: 'uppercase', letterSpacing: 0.8, fontWeight: '500' }}>
           {label}
